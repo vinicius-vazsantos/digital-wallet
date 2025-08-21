@@ -1,0 +1,21 @@
+# Composer
+/vendor/
+/composer.lock
+
+# Runtime
+/runtime/*
+!/runtime/.gitignore
+
+# Logs
+/logs/*
+!/logs/.gitignore
+
+# Configurações locais
+/.env
+/.env.*.local
+/.phpunit.result.cache
+
+# IDEs
+.idea/
+.vscode/
+*.iml
