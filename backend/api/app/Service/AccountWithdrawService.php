@@ -125,6 +125,7 @@ class AccountWithdrawService
 
                 // Cria detalhes PIX
                 $pix = new AccountWithdrawPix();
+                $pix->id = Uuid::uuid4()->toString();
                 $pix->account_withdraw_id = $withdraw->id;
                 $pix->type = $data['pix']['type'];
                 $pix->key = $data['pix']['key'];
@@ -194,7 +195,7 @@ class AccountWithdrawService
         
         // Marca como processado
         $withdraw->done = true;
-        $withdraw->processed_at = Carbon::now();
+        $withdraw->updated_at = Carbon::now();
         $withdraw->save();
     }
 
