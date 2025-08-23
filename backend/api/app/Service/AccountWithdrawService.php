@@ -13,6 +13,16 @@ use Carbon\Carbon;
 
 class AccountWithdrawService
 {
+    // Lista de métodos de saques suportados e suas regras
+    private const WITHDRAW_METHODS = [
+        'PIX' => [
+            'required_fields' => ['pix.type', 'pix.key'],
+            'valid_types' => ['email'], // TODO: 'cpf_cnpj', 'phone', 'random_key'
+            'validator' => 'validatePixType'
+        ],
+        // TODO: 'TED' => [...], 'CRYPTO' => [...]
+    ];
+
     // Lista todos os saques da conta
     public function listWithdraws(?string $accountId, int $page = 1, int $limit = 10, ?string $search = null, ?string $createdAt = null): array
     {
@@ -97,9 +107,6 @@ class AccountWithdrawService
         $amount = (float)$data['amount'];
         $this->validateAmount($amount);
 
-        // Valida tipo PIX
-        $this->validatePixType($data['pix']['type']);
-
         // Processa agendamento
         $scheduled = isset($data['schedule']) && !empty($data['schedule']);
         $scheduledFor = $scheduled ? Carbon::parse($data['schedule']) : null;
@@ -150,69 +157,36 @@ class AccountWithdrawService
         });
     }
 
-    // Valida tipo PIX
-    private function validatePixType(string $pixType): void
-    {
-        $validTypes = ['email', 'cpf_cnpj', 'phone', 'random_key'];
-        
-        if (!in_array($pixType, $validTypes)) {
-            $errorCode = ErrorMapper::INVALID_PIX_TYPE;
-            throw new BusinessException(
-                $errorCode,
-                ErrorMapper::getDefaultMessage($errorCode),
-                [
-                    'valid_types' => $validTypes,
-                    'provided_type' => $pixType
-                ],
-                ErrorMapper::getHttpStatusCode($errorCode)
-            );
-        }
-    }
-
-    // Processa saque imediato
-    private function processImmediateWithdraw(Account $account, AccountWithdraw $withdraw, float $amount): void
-    {
-        // Verifica saldo novamente (double-check)
-        if ($account->balance < $amount) {
-            $errorCode = ErrorMapper::INSUFFICIENT_BALANCE;
-            throw new BusinessException(
-                $errorCode,
-                ErrorMapper::getDefaultMessage($errorCode),
-                [
-                    'current_balance' => $account->balance,
-                    'requested_amount' => $amount,
-                    'deficit' => $amount - $account->balance
-                ],
-                ErrorMapper::getHttpStatusCode($errorCode)
-            );
-        }
-
-        // Deduz saldo
-        $account->balance -= $amount;
-        $account->save();
-
-        // TODO: Envia email assíncrono
-        
-        // Marca como processado
-        $withdraw->done = true;
-        $withdraw->updated_at = Carbon::now();
-        $withdraw->save();
-    }
-
     // Valida campos obrigatórios
     private function validateRequiredFields(array $data): void
     {
-        $requiredFields = [
-            'account_id', 'method', 'amount', 
-            'pix.type', 'pix.key'
-        ];
+        // Validação de campo método (ex:PIX)
+        if (!isset($data['method'])) {
+            $errorCode = ErrorMapper::REQUIRED_FIELD_MISSING;
+            throw new BusinessException(
+                $errorCode,
+                ErrorMapper::getDefaultMessage($errorCode),
+                ['field' => 'method'],
+                ErrorMapper::getHttpStatusCode($errorCode)
+            );
+        }
+
+        // Validação de método suportado
+        $method = strtoupper($data['method']);
+        if (!isset(self::WITHDRAW_METHODS[$method])) {
+            $errorCode = ErrorMapper::UNSUPPORTED_WITHDRAW_METHOD;
+            throw new BusinessException(
+                $errorCode,
+                ErrorMapper::getDefaultMessage($errorCode),
+                ['supported_methods' => array_keys(self::WITHDRAW_METHODS)],
+                ErrorMapper::getHttpStatusCode($errorCode)
+            );
+        }
 
         $missingFields = [];
-
-        foreach ($requiredFields as $field) {
+        foreach (self::WITHDRAW_METHODS[$method]['required_fields'] as $field) {
             $keys = explode('.', $field);
             $value = $data;
-
             foreach ($keys as $key) {
                 if (!isset($value[$key]) || $value[$key] === '') {
                     $missingFields[] = $field;
@@ -222,6 +196,7 @@ class AccountWithdrawService
             }
         }
 
+        // Validação de campos obrigatórios
         if (!empty($missingFields)) {
             $errorCode = ErrorMapper::REQUIRED_FIELD_MISSING;
             throw new BusinessException(
@@ -232,13 +207,40 @@ class AccountWithdrawService
             );
         }
 
-        // Validação específica para método PIX
-        if ($data['method'] !== 'PIX') {
-            $errorCode = ErrorMapper::UNSUPPORTED_WITHDRAW_METHOD;
+        // Validação de tipo do método
+        $validator = self::WITHDRAW_METHODS[$method]['validator'];
+        if ($validator && method_exists($this, $validator)) {
+            $this->$validator($data[strtolower($method)] ?? $data);
+        }
+    }
+
+    // Valida tipo PIX
+    private function validatePixType(array $pix): void
+    {
+        var_dump($pix);
+        $type = $pix['type'] ?? '';
+        $validTypes = self::WITHDRAW_METHODS['PIX']['valid_types'];
+
+        if (!in_array($type, $validTypes)) {
+            $errorCode = ErrorMapper::INVALID_PIX_TYPE;
             throw new BusinessException(
                 $errorCode,
                 ErrorMapper::getDefaultMessage($errorCode),
-                ['supported_methods' => ['PIX']],
+                [
+                    'valid_types' => $validTypes,
+                    'provided_type' => $type
+                ],
+                ErrorMapper::getHttpStatusCode($errorCode)
+            );
+        }
+
+        // Validação para tipo email
+        if ($type === 'email' && !filter_var($pix['key'], FILTER_VALIDATE_EMAIL)) {
+            $errorCode = ErrorMapper::INVALID_PIX_KEY;
+            throw new BusinessException(
+                $errorCode,
+                ErrorMapper::getDefaultMessage($errorCode),
+                ['provided_key' => $pix['key']],
                 ErrorMapper::getHttpStatusCode($errorCode)
             );
         }
@@ -280,7 +282,7 @@ class AccountWithdrawService
                 ErrorMapper::getHttpStatusCode($errorCode)
             );
         }
-
+        
         if ($scheduledFor->diffInDays(Carbon::now()) > 7) {
             $errorCode = ErrorMapper::SCHEDULING_LIMIT_EXCEEDED;
             throw new BusinessException(
@@ -330,6 +332,36 @@ class AccountWithdrawService
                 'key' => $withdraw->pixDetails->key
             ]
         ];
+    }
+
+    // Processa saque imediato
+    private function processImmediateWithdraw(Account $account, AccountWithdraw $withdraw, float $amount): void
+    {
+        // Verifica saldo novamente (double-check)
+        if ($account->balance < $amount) {
+            $errorCode = ErrorMapper::INSUFFICIENT_BALANCE;
+            throw new BusinessException(
+                $errorCode,
+                ErrorMapper::getDefaultMessage($errorCode),
+                [
+                    'current_balance' => $account->balance,
+                    'requested_amount' => $amount,
+                    'deficit' => $amount - $account->balance
+                ],
+                ErrorMapper::getHttpStatusCode($errorCode)
+            );
+        }
+
+        // Deduz saldo
+        $account->balance -= $amount;
+        $account->save();
+
+        // TODO: Envia email assíncrono
+        
+        // Marca como processado
+        $withdraw->done = true;
+        $withdraw->updated_at = Carbon::now();
+        $withdraw->save();
     }
 
     // Processa saque agendado
