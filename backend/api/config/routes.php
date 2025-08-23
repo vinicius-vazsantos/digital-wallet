@@ -16,3 +16,20 @@ Router::addRoute(['GET', 'POST', 'HEAD'], '/', 'App\Controller\IndexController@i
 Router::get('/favicon.ico', function () {
     return '';
 });
+
+Router::addGroup('/account', function () {
+    
+    // CRUD de contas
+    Router::get('', 'App\Controller\AccountController@getAll');
+    Router::post('', 'App\Controller\AccountController@create');
+    Router::get('/{accountId}', 'App\Controller\AccountController@getById');
+    Router::put('/{accountId}', 'App\Controller\AccountController@update');
+    Router::delete('/{accountId}', 'App\Controller\AccountController@delete');
+
+    // Rotas de saque
+    Router::addGroup('/{accountId}/balance', function () {
+        Router::post('/withdraws', 'App\Controller\AccountWithdrawController@create');
+        Router::get('/withdraws', 'App\Controller\AccountWithdrawController@getAll');
+        Router::get('/withdraws/{withdrawId}', 'App\Controller\AccountWithdrawController@getById');
+    });
+});
