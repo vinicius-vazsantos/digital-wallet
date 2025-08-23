@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Model;
 
 use Hyperf\DbConnection\Model\Model;
-use Hyperf\Database\Model\SoftDeletes;
 
 /**
  * @property string $id
@@ -17,8 +16,6 @@ use Hyperf\Database\Model\SoftDeletes;
  */
 class AccountWithdrawPix extends Model
 {
-    use SoftDeletes;
-
     protected ?string $table = 'account_withdraw_pix';
     protected string $keyType = 'string';
     public bool $incrementing = false;
@@ -28,7 +25,6 @@ class AccountWithdrawPix extends Model
         'account_withdraw_id' => 'string',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
-        'deleted_at' => 'datetime',
     ];
 
     protected array $fillable = [
