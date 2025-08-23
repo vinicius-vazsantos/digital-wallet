@@ -147,7 +147,7 @@ class AccountService
     private function validateBalance(float $balance): void
     {
         if ($balance < 0) {
-            $errorCode = ErrorMapper::INVALID_WITHDRAW_AMOUNT;
+            $errorCode = ErrorMapper::INVALID_BALANCE;
             throw new BusinessException(
                 $errorCode,
                 ErrorMapper::getDefaultMessage($errorCode),
