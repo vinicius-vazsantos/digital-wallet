@@ -13,6 +13,7 @@ class ErrorMapper
     public const ACCOUNT_NOT_FOUND = 'ACCOUNT_NOT_FOUND';
     public const INSUFFICIENT_BALANCE = 'INSUFFICIENT_BALANCE';
     public const INVALID_WITHDRAW_AMOUNT = 'INVALID_WITHDRAW_AMOUNT';
+    public const INVALID_BALANCE = 'INVALID_BALANCE';
     public const SCHEDULING_ERROR = 'SCHEDULING_ERROR';
     public const PAST_SCHEDULING_NOT_ALLOWED = 'PAST_SCHEDULING_NOT_ALLOWED';
     public const SCHEDULING_LIMIT_EXCEEDED = 'SCHEDULING_LIMIT_EXCEEDED';
@@ -33,6 +34,7 @@ class ErrorMapper
         self::REQUIRED_FIELD_MISSING => 400,
         self::INVALID_DATA_TYPE => 400,
         self::INVALID_WITHDRAW_AMOUNT => 400,
+        self::INVALID_BALANCE => 400,
         self::SCHEDULING_ERROR => 400,
         self::PAST_SCHEDULING_NOT_ALLOWED => 400,
         self::SCHEDULING_LIMIT_EXCEEDED => 400,
@@ -63,6 +65,7 @@ class ErrorMapper
         self::ACCOUNT_NOT_FOUND => 'Conta não encontrada',
         self::INSUFFICIENT_BALANCE => 'Saldo insuficiente',
         self::INVALID_WITHDRAW_AMOUNT => 'Valor de saque inválido',
+        self::INVALID_BALANCE => 'Valor de saldo inválido',
         self::SCHEDULING_ERROR => 'Erro no agendamento',
         self::PAST_SCHEDULING_NOT_ALLOWED => 'Não é permitido agendar para o passado',
         self::SCHEDULING_LIMIT_EXCEEDED => 'Limite de agendamento excedido',
