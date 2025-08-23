@@ -14,7 +14,6 @@ class CreateAccountWithdrawPixTable extends Migration
             $table->string('type');
             $table->string('key');
             $table->timestamps();
-            $table->softDeletes();
 
             $table->foreign('account_withdraw_id')->references('id')->on('account_withdraw')->onDelete('cascade');
         });
