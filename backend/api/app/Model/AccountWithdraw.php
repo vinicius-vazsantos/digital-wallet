@@ -35,7 +35,6 @@ class AccountWithdraw extends Model
         'done' => 'boolean',
         'error' => 'boolean',
         'scheduled_for' => 'datetime',
-        'processed_at' => 'datetime',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
@@ -49,7 +48,8 @@ class AccountWithdraw extends Model
         'done',
         'error',
         'error_reason',
-        'processed_at'
+        'created_at',
+        'updated_at'
     ];
 
     public function account()
@@ -73,7 +73,7 @@ class AccountWithdraw extends Model
     public function markAsProcessed()
     {
         $this->done = true;
-        $this->processed_at = Carbon::now();
+        $this->updated_at = Carbon::now();
         $this->save();
     }
 
@@ -81,7 +81,7 @@ class AccountWithdraw extends Model
     {
         $this->error = true;
         $this->error_reason = $reason;
-        $this->processed_at = Carbon::now();
+        $this->updated_at = Carbon::now();
         $this->save();
     }
 }
