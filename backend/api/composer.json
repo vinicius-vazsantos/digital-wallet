@@ -16,6 +16,7 @@
         "hyperf/cache": "~3.1.0",
         "hyperf/command": "~3.1.0",
         "hyperf/config": "~3.1.0",
+        "hyperf/crontab": "^3.1",
         "hyperf/database": "~3.1.0",
         "hyperf/db-connection": "~3.1.0",
         "hyperf/engine": "^2.10",
@@ -27,6 +28,7 @@
         "hyperf/paginator": "^3.1",
         "hyperf/process": "~3.1.0",
         "hyperf/redis": "~3.1.0",
+        "phpmailer/phpmailer": "^6.10",
         "ramsey/uuid": "^4.9"
     },
     "require-dev": {
