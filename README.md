@@ -3,6 +3,22 @@
 **Descrição:**
 Plataforma de conta digital que permite saques PIX rápidos e seguros, com gestão de saldo, notificações e tecnologia PHP Hyperf, MySQL e Docker.
 
+
+## Regras de Negócio
+
+- [x] A operação do saque deve ser registrada no banco de dados, usando as tabelas **account_withdraw** e **account_withdraw_pix**.  
+- [x] O saque **sem agendamento** deve realizar o saque de imediato.  
+- [x] O saque **com agendamento** deve ser processado somente via **cron**.  
+- [x] O saque deve deduzir o saldo da conta na tabela **account**.  
+- [x] Atualmente só existe a opção de saque via **PIX** com chaves do tipo **email**.  
+- [x] A implementação deve permitir expansão para **outros tipos de saque** no futuro.  
+- [x] Não é permitido sacar um valor maior que o disponível no saldo da conta digital.  
+- [x] O saldo da conta não pode ficar negativo.  
+- [x] Para **saque agendado**, não é permitido agendar para um momento no passado.  
+- [x] Para **saque agendado**, não é permitido agendar para uma data maior que **7 dias no futuro**.  
+
+---
+
 ## Configuração do ambiente de desenvolvimento Hyperf com PHP 8.1 e Swoole
 
 ### Requisitos
