@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace App\Model;
 
 use Hyperf\DbConnection\Model\Model;
+use Carbon\Carbon;
 
 /**
- * @property int $id
- * @property int $account_id
+ * @property string $id
+ * @property string $account_id
  * @property float $amount
  * @property string $method
  * @property bool $scheduled
@@ -23,10 +24,12 @@ use Hyperf\DbConnection\Model\Model;
 class AccountWithdraw extends Model
 {
     protected ?string $table = 'account_withdraw';
+    protected string $keyType = 'string';
+    public bool $incrementing = false;
 
     protected array $casts = [
-        'id' => 'integer',
-        'account_id' => 'integer',
+        'id' => 'string',
+        'account_id' => 'string',
         'amount' => 'float',
         'scheduled' => 'boolean',
         'done' => 'boolean',
@@ -64,13 +67,13 @@ class AccountWithdraw extends Model
         return $query->where('scheduled', true)
                     ->where('done', false)
                     ->where('error', false)
-                    ->where('scheduled_for', '<=', now());
+                    ->where('scheduled_for', '<=', Carbon::now());
     }
 
     public function markAsProcessed()
     {
         $this->done = true;
-        $this->processed_at = now();
+        $this->processed_at = Carbon::now();
         $this->save();
     }
 
@@ -78,7 +81,7 @@ class AccountWithdraw extends Model
     {
         $this->error = true;
         $this->error_reason = $reason;
-        $this->processed_at = now();
+        $this->processed_at = Carbon::now();
         $this->save();
     }
 }
