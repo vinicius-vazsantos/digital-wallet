@@ -22,6 +22,7 @@ class ErrorMapper
     public const INTERNAL_ERROR = 'INTERNAL_ERROR';
     public const DATABASE_ERROR = 'DATABASE_ERROR';
     public const TRANSACTION_ERROR = 'TRANSACTION_ERROR';
+    public const NO_FIELDS_TO_UPDATE = 'NO_FIELDS_TO_UPDATE';
 
     /**
      * Mapeamento de códigos de erro para códigos HTTP
@@ -38,6 +39,7 @@ class ErrorMapper
         self::INVALID_PIX_KEY => 400,
         self::INVALID_PIX_TYPE => 400,
         self::UNSUPPORTED_WITHDRAW_METHOD => 400,
+        self::NO_FIELDS_TO_UPDATE => 400,
         
         // Não encontrado - 404 Not Found
         self::ACCOUNT_NOT_FOUND => 404,
@@ -70,6 +72,7 @@ class ErrorMapper
         self::INTERNAL_ERROR => 'Erro interno do servidor',
         self::DATABASE_ERROR => 'Erro de banco de dados',
         self::TRANSACTION_ERROR => 'Erro na transação',
+        self::NO_FIELDS_TO_UPDATE => 'Nenhum campo válido foi fornecido para atualização',
     ];
 
     /**
