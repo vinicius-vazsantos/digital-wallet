@@ -2,10 +2,13 @@
 
 namespace App\Service;
 
+use Hyperf\Context\ApplicationContext;
+use Psr\Log\LoggerInterface;
 use App\Model\Account;
 use App\Model\AccountWithdraw;
 use App\Model\AccountWithdrawPix;
 use App\Exception\Handler\BusinessException;
+use App\Service\EmailService;
 use App\Constants\ErrorMapper;
 use Hyperf\DbConnection\Db;
 use Ramsey\Uuid\Uuid;
@@ -217,7 +220,6 @@ class AccountWithdrawService
     // Valida tipo PIX
     private function validatePixType(array $pix): void
     {
-        var_dump($pix);
         $type = $pix['type'] ?? '';
         $validTypes = self::WITHDRAW_METHODS['PIX']['valid_types'];
 
@@ -371,12 +373,12 @@ class AccountWithdrawService
             $account = Account::find($withdraw->account_id);
             
             if (!$account) {
-                $withdraw->markAsFailed('Conta não encontrada');
+                $withdraw->markAsFailed(ErrorMapper::getDefaultMessage(ErrorMapper::ACCOUNT_NOT_FOUND));
                 return;
             }
 
             if ($account->balance < $withdraw->amount) {
-                $withdraw->markAsFailed('Saldo insuficiente no momento do agendamento');
+                $withdraw->markAsFailed(ErrorMapper::getDefaultMessage(ErrorMapper::INSUFFICIENT_BALANCE));
                 return;
             }
 
@@ -384,7 +386,20 @@ class AccountWithdrawService
             $account->balance -= $withdraw->amount;
             $account->save();
 
-            // TODO: Envia email
+            // Envia email
+            try {
+                $emailService = ApplicationContext::getContainer()->get(EmailService::class);
+                $emailService->sendWithdrawalEmail(
+                    $withdraw->pix->key,
+                    $withdraw->amount,
+                    $withdraw->pix->key,
+                    $withdraw->pix->type,
+                    $account->updated_at->toDateString()
+                );
+            } catch (\Throwable $e) {
+                $logger = ApplicationContext::getContainer()->get(LoggerInterface::class);
+                $logger->error("Erro ao enviar email para saque {$withdraw->id}: " . $e->getMessage());
+            }
             
             // Marca como processado
             $withdraw->markAsProcessed();
