@@ -68,6 +68,8 @@ class AccountService
             );
         }
 
+        $this->validateBalance($initialBalance);
+
         $account = new Account();
         $account->id = Uuid::uuid4()->toString();
         $account->name = $name;
@@ -92,14 +94,28 @@ class AccountService
             );
         }
 
+        $updated = false;
+
         // Valida e atualiza apenas campos permitidos
         if (isset($data['name'])) {
             $account->name = $data['name'];
+            $updated = true;
         }
 
         if (isset($data['balance'])) {
             $this->validateBalance($data['balance']);
             $account->balance = (float) $data['balance'];
+            $updated = true;
+        }
+
+        if (! $updated) {
+            $errorCode = ErrorMapper::NO_FIELDS_TO_UPDATE;
+            throw new BusinessException(
+                $errorCode,
+                ErrorMapper::getDefaultMessage($errorCode),
+                ['payload' => $data],
+                ErrorMapper::getHttpStatusCode($errorCode)
+            );
         }
 
         $account->save();
@@ -131,7 +147,7 @@ class AccountService
     private function validateBalance(float $balance): void
     {
         if ($balance < 0) {
-            $errorCode = ErrorCodes::INVALID_WITHDRAW_AMOUNT;
+            $errorCode = ErrorMapper::INVALID_WITHDRAW_AMOUNT;
             throw new BusinessException(
                 $errorCode,
                 ErrorMapper::getDefaultMessage($errorCode),
