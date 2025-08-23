@@ -390,10 +390,10 @@ class AccountWithdrawService
             try {
                 $emailService = ApplicationContext::getContainer()->get(EmailService::class);
                 $emailService->sendWithdrawalEmail(
-                    $withdraw->pix->key,
+                    $withdraw->pixDetails->key,
                     $withdraw->amount,
-                    $withdraw->pix->key,
-                    $withdraw->pix->type,
+                    $withdraw->pixDetails->key,
+                    $withdraw->pixDetails->type,
                     $account->updated_at->toDateString()
                 );
             } catch (\Throwable $e) {
