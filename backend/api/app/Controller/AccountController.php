@@ -18,6 +18,14 @@ use Psr\Http\Message\ResponseInterface as Response;
  *     description="Documentação da API de Contas"
  * )
  *
+ * @OA\SecurityScheme(
+ *     securityScheme="bearerAuth",
+ *     type="http",
+ *     scheme="bearer",
+ *     bearerFormat="JWT",
+ *     description="Use o token JWT gerado no login. Exemplo: 'Bearer {token}'"
+ * )
+ * 
  * @OA\Tag(
  *     name="Accounts",
  *     description="Operações de contas"
@@ -64,6 +72,7 @@ class AccountController
      *     path="/accounts",
      *     summary="Lista todas as contas com paginação e filtros",
      *     tags={"Accounts"},
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
      *         name="page",
      *         in="query",
@@ -170,6 +179,7 @@ class AccountController
      *     path="/accounts/{accountId}",
      *     summary="Obtém uma conta pelo UUID",
      *     tags={"Accounts"},
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
      *         name="accountId",
      *         in="path",
@@ -208,6 +218,7 @@ class AccountController
                 ->withStatus($e->getHttpStatusCode())
                 ->json([
                     'data' => [],
+                    'message' => $e->getMessage(),
                     'error' => $e->toArray()
                 ]);
 
@@ -229,6 +240,7 @@ class AccountController
      *     path="/accounts",
      *     summary="Cria uma nova conta",
      *     tags={"Accounts"},
+     *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(ref="#/components/schemas/AccountCreate")
@@ -268,6 +280,7 @@ class AccountController
                 ->withStatus($e->getHttpStatusCode())
                 ->json([
                     'data' => [],
+                    'message' => $e->getMessage(),
                     'error' => $e->toArray()
                 ]);
 
@@ -289,6 +302,7 @@ class AccountController
      *     path="/accounts/{accountId}",
      *     summary="Atualiza uma conta pelo UUID",
      *     tags={"Accounts"},
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
      *         name="accountId",
      *         in="path",
@@ -338,6 +352,7 @@ class AccountController
                 ->withStatus($e->getHttpStatusCode())
                 ->json([
                     'data' => [],
+                    'message' => $e->getMessage(),
                     'error' => $e->toArray()
                 ]);
 
@@ -359,6 +374,7 @@ class AccountController
      *     path="/accounts/{accountId}",
      *     summary="Deleta uma conta pelo UUID",
      *     tags={"Accounts"},
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
      *         name="accountId",
      *         in="path",
@@ -401,6 +417,7 @@ class AccountController
                 ->withStatus($e->getHttpStatusCode())
                 ->json([
                     'data' => [],
+                    'message' => $e->getMessage(),
                     'error' => $e->toArray()
                 ]);
 
