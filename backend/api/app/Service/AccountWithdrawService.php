@@ -9,6 +9,7 @@ use App\Model\AccountWithdraw;
 use App\Model\AccountWithdrawPix;
 use App\Exception\Handler\BusinessException;
 use App\Service\EmailService;
+use App\Service\AccountService;
 use App\Constants\ErrorMapper;
 use Hyperf\DbConnection\Db;
 use Ramsey\Uuid\Uuid;
@@ -39,17 +40,9 @@ class AccountWithdrawService
             );
         }
 
-        $account = Account::find($accountId);
-        
-        if (!$account) {
-            $errorCode = ErrorMapper::ACCOUNT_NOT_FOUND;
-            throw new BusinessException(
-                $errorCode,
-                ErrorMapper::getDefaultMessage($errorCode),
-                ['account_id' => $accountId],
-                ErrorMapper::getHttpStatusCode($errorCode)
-            );
-        }
+        ApplicationContext::getContainer()
+            ->get(AccountService::class)
+            ->getAccount($accountId);
 
         $query = AccountWithdraw::query()->where('account_id', $accountId);
 
@@ -85,17 +78,13 @@ class AccountWithdrawService
             );
         }
 
-        $account = Account::find($accountId);
-        
-        if (!$account) {
-            $errorCode = ErrorMapper::ACCOUNT_NOT_FOUND;
-            throw new BusinessException(
-                $errorCode,
-                ErrorMapper::getDefaultMessage($errorCode),
-                ['account_id' => $accountId],
-                ErrorMapper::getHttpStatusCode($errorCode)
-            );
-        }
+        ApplicationContext::getContainer()
+            ->get(AccountService::class)
+            ->getAccount($accountId);
+
+        $accountService = ApplicationContext::getContainer()
+            ->get(AccountService::class)
+            ->getAccount($accountId);
 
         $withdraw = AccountWithdraw::where('id', $withdrawId)
             ->where('account_id', $accountId)
@@ -120,16 +109,9 @@ class AccountWithdrawService
         // Valida dados obrigatórios
         $this->validateRequiredFields($data);
         
-        $account = Account::find($data['account_id']);
-        if (!$account) {
-            $errorCode = ErrorMapper::ACCOUNT_NOT_FOUND;
-            throw new BusinessException(
-                $errorCode,
-                ErrorMapper::getDefaultMessage($errorCode),
-                ['account_id' => $data['account_id']],
-                ErrorMapper::getHttpStatusCode($errorCode)
-            );
-        }
+        $account = ApplicationContext::getContainer()
+            ->get(AccountService::class)
+            ->getAccount($data['account_id']);
 
         $amount = (float)$data['amount'];
         $this->validateAmount($amount);
