@@ -30,6 +30,7 @@ class TestEmailController
      *     path="/accounts/test-email",
      *     summary="Envia um e-mail de teste de saque",
      *     tags={"TestEmail"},
+     *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
      *         required=false,
      *         @OA\JsonContent(
@@ -73,6 +74,15 @@ class TestEmailController
                 ],
                 'message' => 'E-mail enviado com sucesso!'
             ]);
+        } catch (BusinessException $e) {
+            return $this->response
+                ->withStatus($e->getHttpStatusCode())
+                ->json([
+                    'data' => [],
+                    'message' => $e->getMessage(),
+                    'error' => $e->toArray()
+                ]);
+
         } catch (Exception $e) {
             $errorCode = ErrorMapper::INTERNAL_ERROR;
             $status = ErrorMapper::getHttpStatusCode($errorCode);
