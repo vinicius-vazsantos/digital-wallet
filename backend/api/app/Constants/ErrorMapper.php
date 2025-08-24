@@ -26,6 +26,11 @@ class ErrorMapper
     public const TRANSACTION_ERROR = 'TRANSACTION_ERROR';
     public const NO_FIELDS_TO_UPDATE = 'NO_FIELDS_TO_UPDATE';
     public const EMAIL_SEND_FAILED = 'EMAIL_SEND_FAILED';
+    public const LOGIN_VALIDATION_ERROR = 'LOGIN_VALIDATION_ERROR';
+    public const LOGIN_UNAUTHORIZED = 'LOGIN_UNAUTHORIZED';
+    public const TOKEN_VALIDATION_ERROR = 'TOKEN_VALIDATION_ERROR';
+    public const TOKEN_NOT_PROVIDED = 'TOKEN_NOT_PROVIDED';
+    public const EMAIL_SENDING_FAILED = 'EMAIL_SENDING_FAILED';
 
     /**
      * Mapeamento de códigos de erro para códigos HTTP
@@ -44,7 +49,11 @@ class ErrorMapper
         self::INVALID_PIX_TYPE => 400,
         self::UNSUPPORTED_WITHDRAW_METHOD => 400,
         self::NO_FIELDS_TO_UPDATE => 400,
-        
+        self::LOGIN_VALIDATION_ERROR => 422,
+        self::LOGIN_UNAUTHORIZED => 401,
+        self::TOKEN_VALIDATION_ERROR => 401,
+        self::TOKEN_NOT_PROVIDED => 401,
+
         // Não encontrado - 404 Not Found
         self::ACCOUNT_NOT_FOUND => 404,
         self::WITHDRAW_NOT_FOUND => 404,
@@ -57,6 +66,7 @@ class ErrorMapper
         self::DATABASE_ERROR => 500,
         self::TRANSACTION_ERROR => 500,
         self::EMAIL_SEND_FAILED => 500,
+        self::EMAIL_SENDING_FAILED => 500,
     ];
 
     /**
@@ -82,6 +92,11 @@ class ErrorMapper
         self::TRANSACTION_ERROR => 'Erro na transação',
         self::NO_FIELDS_TO_UPDATE => 'Nenhum campo válido foi fornecido para atualização',
         self::EMAIL_SEND_FAILED => 'Falha ao enviar e-mail',
+        self::LOGIN_VALIDATION_ERROR => 'Email e senha são obrigatórios',
+        self::LOGIN_UNAUTHORIZED => 'Email ou senha incorretos',
+        self::TOKEN_VALIDATION_ERROR => 'Token inválido',
+        self::TOKEN_NOT_PROVIDED => 'Token não fornecido',
+        self::EMAIL_SENDING_FAILED => 'Falha ao enviar e-mail',
     ];
 
     /**
