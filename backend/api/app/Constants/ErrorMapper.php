@@ -11,6 +11,7 @@ class ErrorMapper
     public const REQUIRED_FIELD_MISSING = 'REQUIRED_FIELD_MISSING';
     public const INVALID_DATA_TYPE = 'INVALID_DATA_TYPE';
     public const ACCOUNT_NOT_FOUND = 'ACCOUNT_NOT_FOUND';
+    public const WITHDRAW_NOT_FOUND = 'WITHDRAW_NOT_FOUND';
     public const INSUFFICIENT_BALANCE = 'INSUFFICIENT_BALANCE';
     public const INVALID_WITHDRAW_AMOUNT = 'INVALID_WITHDRAW_AMOUNT';
     public const INVALID_BALANCE = 'INVALID_BALANCE';
@@ -46,7 +47,8 @@ class ErrorMapper
         
         // Não encontrado - 404 Not Found
         self::ACCOUNT_NOT_FOUND => 404,
-        
+        self::WITHDRAW_NOT_FOUND => 404,
+
         // Conflito - 409 Conflict
         self::INSUFFICIENT_BALANCE => 409,
         
@@ -65,6 +67,7 @@ class ErrorMapper
         self::REQUIRED_FIELD_MISSING => 'Campos obrigatórios não fornecidos',
         self::INVALID_DATA_TYPE => 'Tipo de dado inválido',
         self::ACCOUNT_NOT_FOUND => 'Conta não encontrada',
+        self::WITHDRAW_NOT_FOUND => 'Saque não encontrado',
         self::INSUFFICIENT_BALANCE => 'Saldo insuficiente',
         self::INVALID_WITHDRAW_AMOUNT => 'Valor de saque inválido',
         self::INVALID_BALANCE => 'Valor de saldo inválido',
