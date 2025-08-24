@@ -117,7 +117,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "post": {
                 "tags": [
@@ -157,7 +162,12 @@
                     "500": {
                         "description": "Erro interno do servidor"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/accounts/{accountId}": {
@@ -201,7 +211,12 @@
                     "500": {
                         "description": "Erro interno do servidor"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "put": {
                 "tags": [
@@ -253,7 +268,12 @@
                     "500": {
                         "description": "Erro interno do servidor"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "delete": {
                 "tags": [
@@ -296,7 +316,12 @@
                     "500": {
                         "description": "Erro interno do servidor"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/accounts/{accountId}/balance/withdraws": {
@@ -360,7 +385,12 @@
                     "500": {
                         "description": "Erro interno do servidor"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "post": {
                 "tags": [
@@ -412,7 +442,12 @@
                     "500": {
                         "description": "Erro interno do servidor"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/accounts/{accountId}/balance/withdraws/{withdrawId}": {
@@ -466,7 +501,228 @@
                     "500": {
                         "description": "Erro interno do servidor"
                     }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/auth/login": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Realiza login e obtém token JWT",
+                "operationId": "1ce31663c50c78ff1404e254dc09eb72",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/LoginRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Login realizado com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/LoginResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Credenciais inválidas",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Credenciais inválidas"
+                                        },
+                                        "error": {
+                                            "properties": {
+                                                "code": {
+                                                    "type": "integer",
+                                                    "example": 401
+                                                },
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "Email ou senha incorretos"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Dados de entrada inválidos",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Dados de entrada inválidos"
+                                        },
+                                        "error": {
+                                            "properties": {
+                                                "code": {
+                                                    "type": "integer",
+                                                    "example": 422
+                                                },
+                                                "details": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "field": {
+                                                                "type": "string",
+                                                                "example": "email"
+                                                            },
+                                                            "message": {
+                                                                "type": "string",
+                                                                "example": "O campo email é obrigatório"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erro interno do servidor",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Erro interno do servidor"
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Detalhes do erro"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
                 }
+            }
+        },
+        "/auth/logout": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Realiza logout e invalida o token JWT",
+                "operationId": "5855836da9554d75819678d5fefbbf0f",
+                "responses": {
+                    "200": {
+                        "description": "Logout realizado com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/LogoutResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Token não fornecido ou inválido",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Token não fornecido"
+                                        },
+                                        "error": {
+                                            "properties": {
+                                                "code": {
+                                                    "type": "integer",
+                                                    "example": 401
+                                                },
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "Token de autenticação necessário"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erro interno do servidor",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Erro interno do servidor"
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Detalhes do erro"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/accounts/test-email": {
@@ -529,7 +785,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         }
     },
@@ -658,6 +919,85 @@
                     }
                 },
                 "type": "object"
+            },
+            "LoginRequest": {
+                "required": [
+                    "email",
+                    "password"
+                ],
+                "properties": {
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "example": "user@example.com"
+                    },
+                    "password": {
+                        "type": "string",
+                        "format": "password",
+                        "example": "secret123"
+                    }
+                },
+                "type": "object"
+            },
+            "LoginResponse": {
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "data": {
+                        "properties": {
+                            "access_token": {
+                                "type": "string",
+                                "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                            },
+                            "token_type": {
+                                "type": "string",
+                                "example": "Bearer"
+                            },
+                            "expires_in": {
+                                "type": "integer",
+                                "example": 3600
+                            }
+                        },
+                        "type": "object"
+                    },
+                    "message": {
+                        "type": "string",
+                        "example": "Login realizado com sucesso"
+                    }
+                },
+                "type": "object"
+            },
+            "LogoutResponse": {
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "data": {
+                        "properties": {
+                            "logged_out": {
+                                "type": "boolean",
+                                "example": true
+                            }
+                        },
+                        "type": "object"
+                    },
+                    "message": {
+                        "type": "string",
+                        "example": "Logout realizado com sucesso"
+                    }
+                },
+                "type": "object"
+            }
+        },
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "description": "Use o token JWT gerado no login. Exemplo: 'Bearer {token}'",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
             }
         }
     },
@@ -669,6 +1009,10 @@
         {
             "name": "AccountWithdraw",
             "description": "Operações de saque de conta"
+        },
+        {
+            "name": "Authentication",
+            "description": "Operações de autenticação"
         },
         {
             "name": "TestEmail",
