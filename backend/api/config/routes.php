@@ -11,16 +11,19 @@ declare(strict_types=1);
  */
 use Hyperf\HttpServer\Router\Router;
 
+// Rotas públicas
 Router::addRoute(['GET', 'POST', 'HEAD'], '/', 'App\Controller\IndexController@index');
+Router::get('/favicon.ico', function () { return ''; });
 
-Router::get('/favicon.ico', function () {
-    return '';
-});
+// Rotas de autenticação
+Router::post('/auth/login', 'App\Controller\AuthController@login');
+Router::post('/auth/logout', 'App\Controller\AuthController@logout');
 
-Router::addRoute(['OPTIONS'], '/accounts/{any:.*}', function () {
-    return '';
-});
+// Rotas OPTIONS para CORS
+Router::addRoute(['OPTIONS'], '/accounts/{any:.*}', function () { return ''; });
+Router::addRoute(['OPTIONS'], '/auth/{any:.*}', function () { return ''; });
 
+// Rotas protegidas por JWT
 Router::addGroup('/accounts', function () {
     // Teste de envio de e-mail
     Router::post('/test-email', 'App\Controller\TestEmailController@send');
@@ -38,4 +41,4 @@ Router::addGroup('/accounts', function () {
         Router::get('/withdraws', 'App\Controller\AccountWithdrawController@getAll');
         Router::get('/withdraws/{withdrawId}', 'App\Controller\AccountWithdrawController@getById');
     });
-});
+}, ['middleware' => [App\Middleware\JwtAuthMiddleware::class]]);
