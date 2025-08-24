@@ -31,11 +31,14 @@ class ErrorMapper
     public const TOKEN_VALIDATION_ERROR = 'TOKEN_VALIDATION_ERROR';
     public const TOKEN_NOT_PROVIDED = 'TOKEN_NOT_PROVIDED';
     public const EMAIL_SENDING_FAILED = 'EMAIL_SENDING_FAILED';
+    public const POSSIBLE_INSUFFICIENT_BALANCE = 'POSSIBLE_INSUFFICIENT_BALANCE';
 
     /**
      * Mapeamento de códigos de erro para códigos HTTP
      */
     public const HTTP_STATUS_MAP = [
+        self::POSSIBLE_INSUFFICIENT_BALANCE => 200,
+
         // Validação - 400 Bad Request
         self::VALIDATION_ERROR => 400,
         self::REQUIRED_FIELD_MISSING => 400,
@@ -73,6 +76,7 @@ class ErrorMapper
      * Mensagens padrão para cada código de erro
      */
     public const DEFAULT_MESSAGES = [
+        self::POSSIBLE_INSUFFICIENT_BALANCE => 'Atenção: o saldo atual pode não ser suficiente quando o agendamento for processado.',
         self::VALIDATION_ERROR => 'Erro de validação',
         self::REQUIRED_FIELD_MISSING => 'Campos obrigatórios não fornecidos',
         self::INVALID_DATA_TYPE => 'Tipo de dado inválido',
