@@ -1,0 +1,678 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Digital Wallet API",
+        "description": "Documentação da API de Contas",
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/accounts": {
+            "get": {
+                "tags": [
+                    "Accounts"
+                ],
+                "summary": "Lista todas as contas com paginação e filtros",
+                "operationId": "221bc0f2e23cd809b6564821c9c3baa3",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Número da página (default: 1)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "Quantidade de itens por página (default: 10)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 10
+                        }
+                    },
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "Texto para buscar por nome",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "created_at",
+                        "in": "query",
+                        "description": "Buscar por data de criação (YYYY-MM-DD)",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "include_deleted",
+                        "in": "query",
+                        "description": "Incluir contas deletadas",
+                        "required": false,
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista de contas obtida com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "total": {
+                                            "type": "integer",
+                                            "example": 120
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Account"
+                                            }
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Contas obtidas com sucesso"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erro interno do servidor",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Falha ao obter contas"
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Detalhes do erro"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Accounts"
+                ],
+                "summary": "Cria uma nova conta",
+                "operationId": "dd823c9d65a902b847a8c4fe8b223e5f",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AccountCreate"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Conta criada com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/Account"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Dados inválidos"
+                    },
+                    "500": {
+                        "description": "Erro interno do servidor"
+                    }
+                }
+            }
+        },
+        "/accounts/{accountId}": {
+            "get": {
+                "tags": [
+                    "Accounts"
+                ],
+                "summary": "Obtém uma conta pelo UUID",
+                "operationId": "f018e7b2e9b069a4ca8fd6edeb4d95c2",
+                "parameters": [
+                    {
+                        "name": "accountId",
+                        "in": "path",
+                        "description": "UUID da conta",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "uuid-1234"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Conta encontrada",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/Account"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Conta não encontrada"
+                    },
+                    "500": {
+                        "description": "Erro interno do servidor"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Accounts"
+                ],
+                "summary": "Atualiza uma conta pelo UUID",
+                "operationId": "16114ceeaa20c048e8ba1a4615c9cf84",
+                "parameters": [
+                    {
+                        "name": "accountId",
+                        "in": "path",
+                        "description": "UUID da conta",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "uuid-1234"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AccountUpdate"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Conta atualizada com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/Account"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Conta não encontrada"
+                    },
+                    "500": {
+                        "description": "Erro interno do servidor"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Accounts"
+                ],
+                "summary": "Deleta uma conta pelo UUID",
+                "operationId": "5c22d85d14a3bf40e9962365d2b4a943",
+                "parameters": [
+                    {
+                        "name": "accountId",
+                        "in": "path",
+                        "description": "UUID da conta",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "uuid-1234"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Conta deletada com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "boolean",
+                                            "example": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Conta não encontrada"
+                    },
+                    "500": {
+                        "description": "Erro interno do servidor"
+                    }
+                }
+            }
+        },
+        "/accounts/{accountId}/balance/withdraws": {
+            "get": {
+                "tags": [
+                    "AccountWithdraw"
+                ],
+                "summary": "Lista todos os saques da conta",
+                "operationId": "8e7f5b0bef3879e85e22259fb05a5e8f",
+                "parameters": [
+                    {
+                        "name": "accountId",
+                        "in": "path",
+                        "description": "UUID da conta",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "account-uuid-1234"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Número da página",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "Itens por página",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 10
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista de saques",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Withdraw"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erro interno do servidor"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "AccountWithdraw"
+                ],
+                "summary": "Cria um novo saque para a conta",
+                "operationId": "75749d73d636a67a02f6a69d40a8480f",
+                "parameters": [
+                    {
+                        "name": "accountId",
+                        "in": "path",
+                        "description": "UUID da conta",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "account-uuid-1234"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/WithdrawCreate"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Saque criado com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/Withdraw"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Dados inválidos"
+                    },
+                    "500": {
+                        "description": "Erro interno do servidor"
+                    }
+                }
+            }
+        },
+        "/accounts/{accountId}/balance/withdraws/{withdrawId}": {
+            "get": {
+                "tags": [
+                    "AccountWithdraw"
+                ],
+                "summary": "Obtém um saque pelo UUID da conta e do saque",
+                "operationId": "137de9108105ccdedc018a7f729a1c8e",
+                "parameters": [
+                    {
+                        "name": "accountId",
+                        "in": "path",
+                        "description": "UUID da conta",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "account-uuid-1234"
+                        }
+                    },
+                    {
+                        "name": "withdrawId",
+                        "in": "path",
+                        "description": "UUID do saque",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "withdraw-uuid-1234"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Saque encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/Withdraw"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Saque não encontrado"
+                    },
+                    "500": {
+                        "description": "Erro interno do servidor"
+                    }
+                }
+            }
+        },
+        "/accounts/test-email": {
+            "post": {
+                "tags": [
+                    "TestEmail"
+                ],
+                "summary": "Envia um e-mail de teste de saque",
+                "operationId": "839bc1a89425c91d6efa83ab5ed72a87",
+                "requestBody": {
+                    "required": false,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "to": {
+                                        "type": "string",
+                                        "example": "no-reply@example.com"
+                                    },
+                                    "amount": {
+                                        "type": "number",
+                                        "example": 100
+                                    },
+                                    "pixKey": {
+                                        "type": "string",
+                                        "example": "chave-pix-exemplo"
+                                    },
+                                    "pixType": {
+                                        "type": "string",
+                                        "example": "email"
+                                    },
+                                    "date": {
+                                        "type": "string",
+                                        "example": "24/08/2025 10:00"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "E-mail enviado com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "E-mail enviado com sucesso!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Account": {
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "example": "uuid-1234"
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "João da Silva"
+                    },
+                    "balance": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 100.5
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
+            },
+            "AccountCreate": {
+                "required": [
+                    "name",
+                    "balance"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "example": "João da Silva"
+                    },
+                    "balance": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 100.5
+                    }
+                },
+                "type": "object"
+            },
+            "AccountUpdate": {
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "example": "João da Silva"
+                    },
+                    "balance": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 150
+                    }
+                },
+                "type": "object"
+            },
+            "Withdraw": {
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "example": "withdraw-uuid-1234"
+                    },
+                    "account_id": {
+                        "type": "string",
+                        "example": "account-uuid-1234"
+                    },
+                    "amount": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 50
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "status": {
+                        "type": "string",
+                        "example": "pending"
+                    }
+                },
+                "type": "object"
+            },
+            "WithdrawCreate": {
+                "required": [
+                    "method",
+                    "pix",
+                    "amount",
+                    "schedule"
+                ],
+                "properties": {
+                    "method": {
+                        "type": "string",
+                        "example": "PIX"
+                    },
+                    "pix": {
+                        "required": [
+                            "type",
+                            "key"
+                        ],
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "example": "email"
+                            },
+                            "key": {
+                                "type": "string",
+                                "example": "no-reply@example.com"
+                            }
+                        },
+                        "type": "object"
+                    },
+                    "amount": {
+                        "type": "number",
+                        "example": 10000
+                    },
+                    "schedule": {
+                        "type": "string",
+                        "example": "2025-08-24 00:00"
+                    }
+                },
+                "type": "object"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Accounts",
+            "description": "Operações de contas"
+        },
+        {
+            "name": "AccountWithdraw",
+            "description": "Operações de saque de conta"
+        },
+        {
+            "name": "TestEmail",
+            "description": "TestEmail"
+        }
+    ]
+}
