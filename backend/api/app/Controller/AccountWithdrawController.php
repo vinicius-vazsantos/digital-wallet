@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use OpenApi\Annotations as OA;
 use App\Service\AccountWithdrawService;
 use App\Exception\Handler\BusinessException;
 use App\Constants\ErrorMapper;
@@ -17,7 +18,7 @@ use Psr\Http\Message\ResponseInterface as Response;
  *     name="AccountWithdraw",
  *     description="Operações de saque de conta"
  * )
- *
+ * 
  * @OA\Schema(
  *     schema="Withdraw",
  *     type="object",
@@ -61,6 +62,7 @@ class AccountWithdrawController
      *     path="/accounts/{accountId}/balance/withdraws",
      *     summary="Lista todos os saques da conta",
      *     tags={"AccountWithdraw"},
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
      *         name="accountId",
      *         in="path",
@@ -112,6 +114,7 @@ class AccountWithdrawController
                 ->withStatus($e->getHttpStatusCode())
                 ->json([
                     'data' => [],
+                    'message' => $e->getMessage(),
                     'error' => $e->toArray()
                 ]);
 
@@ -133,6 +136,7 @@ class AccountWithdrawController
      *     path="/accounts/{accountId}/balance/withdraws/{withdrawId}",
      *     summary="Obtém um saque pelo UUID da conta e do saque",
      *     tags={"AccountWithdraw"},
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
      *         name="accountId",
      *         in="path",
@@ -178,6 +182,7 @@ class AccountWithdrawController
                 ->withStatus($e->getHttpStatusCode())
                 ->json([
                     'data' => [],
+                    'message' => $e->getMessage(),
                     'error' => $e->toArray()
                 ]);
 
@@ -199,6 +204,7 @@ class AccountWithdrawController
      *     path="/accounts/{accountId}/balance/withdraws",
      *     summary="Cria um novo saque para a conta",
      *     tags={"AccountWithdraw"},
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
      *         name="accountId",
      *         in="path",
@@ -245,6 +251,7 @@ class AccountWithdrawController
                 ->withStatus($e->getHttpStatusCode())
                 ->json([
                     'data' => [],
+                    'message' => $e->getMessage(),
                     'error' => $e->toArray()
                 ]);
             
