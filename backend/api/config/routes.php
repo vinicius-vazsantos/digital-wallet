@@ -17,7 +17,13 @@ Router::get('/favicon.ico', function () {
     return '';
 });
 
-Router::addGroup('/account', function () {
+Router::addRoute(['OPTIONS'], '/accounts/{any:.*}', function () {
+    return '';
+});
+
+Router::addGroup('/accounts', function () {
+    // Teste de envio de e-mail
+    Router::post('/test-email', 'App\Controller\TestEmailController@send');
     
     // CRUD de contas
     Router::get('', 'App\Controller\AccountController@getAll');
