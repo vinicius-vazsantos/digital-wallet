@@ -39,6 +39,18 @@ class AccountWithdrawService
             );
         }
 
+        $account = Account::find($accountId);
+        
+        if (!$account) {
+            $errorCode = ErrorMapper::ACCOUNT_NOT_FOUND;
+            throw new BusinessException(
+                $errorCode,
+                ErrorMapper::getDefaultMessage($errorCode),
+                ['account_id' => $accountId],
+                ErrorMapper::getHttpStatusCode($errorCode)
+            );
+        }
+
         $query = AccountWithdraw::query()->where('account_id', $accountId);
 
         if ($search) {
@@ -69,6 +81,18 @@ class AccountWithdrawService
                 $errorCode,
                 ErrorMapper::getDefaultMessage($errorCode),
                 ['field' => empty($accountId) ? 'accountId' : 'withdrawId'],
+                ErrorMapper::getHttpStatusCode($errorCode)
+            );
+        }
+
+        $account = Account::find($accountId);
+        
+        if (!$account) {
+            $errorCode = ErrorMapper::ACCOUNT_NOT_FOUND;
+            throw new BusinessException(
+                $errorCode,
+                ErrorMapper::getDefaultMessage($errorCode),
+                ['account_id' => $accountId],
                 ErrorMapper::getHttpStatusCode($errorCode)
             );
         }
