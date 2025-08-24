@@ -19,23 +19,36 @@ Plataforma de conta digital que permite saques PIX rápidos e seguros, com gest�
 
 ---
 
-## Configuração do ambiente de desenvolvimento Hyperf com PHP 8.1 e Swoole
+## Modo Produção (Docker Compose)
+
+
+Build e start:
+
+```bash
+docker compose up -d --build
+```
+
+> Docker neste caso é o ambiente **produção**, isolado, consistente e pronto para escalabilidade.
+
+---
+
+## Configuração do ambiente de desenvolvimento Hyperf com PHP 8.3 e Swoole
 
 ### Requisitos
 
 * Ubuntu 22.04 ou similar
-* PHP 8.1
+* PHP 8.3
 * Composer
 * Git
 * Extensões básicas de desenvolvimento (`build-essential`, `autoconf`, `pkg-config`)
 
 ---
 
-## Passo 1: Instalar PHP 8.1 e dependências
+## Passo 1: Instalar PHP 8.3 e dependências
 
 ```bash
 sudo apt update
-sudo apt install -y php8.1 php8.1-cli php8.1-dev php8.1-zip php8.1-mbstring php8.1-sockets php8.1-mysql php-pear git curl build-essential autoconf pkg-config
+sudo apt install -y php8.3 php8.3-cli php8.3-dev php8.3-zip php8.3-mbstring php8.3-sockets php8.3-mysql php-pear git curl build-essential autoconf pkg-config
 ```
 
 ---
@@ -53,8 +66,8 @@ cd swoole-src
 
 ```bash
 make clean
-sudo phpize8.1
-./configure --with-php-config=/usr/bin/php-config8.1 --enable-openssl --enable-sockets --enable-mysqlnd
+sudo phpize8.3
+./configure --with-php-config=/usr/bin/php-config8.3 --enable-openssl --enable-sockets --enable-mysqlnd
 make
 make test
 sudo make install
@@ -67,9 +80,9 @@ OBS.: Cuidado com pastas com espaço, pode gerar erro na compilação
 ## Passo 4: Habilitar a extensão Swoole no PHP
 
 ```bash
-echo "extension=swoole.so" | sudo tee /etc/php/8.1/mods-available/swoole.ini
+echo "extension=swoole.so" | sudo tee /etc/php/8.3/mods-available/swoole.ini
 sudo phpenmod swoole
-sudo systemctl restart php8.1-fpm
+sudo systemctl restart php8.3-fpm
 php -m | grep swoole
 ```
 
