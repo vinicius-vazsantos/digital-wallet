@@ -120,13 +120,15 @@ class AccountWithdrawService
         $scheduled = isset($data['schedule']) && !empty($data['schedule']);
         $scheduledFor = $scheduled ? Carbon::parse($data['schedule']) : null;
 
+        // Valida se ha saldo primeiramente
+        $this->validateBalance($account, $amount);
+        $warning = null;
         if ($scheduled) {
+            $warning = $this->validateScheduledBalance($account, $amount);
             $this->validateScheduling($scheduledFor);
-        } else {
-            $this->validateBalance($account, $amount);
         }
 
-        return Db::transaction(function () use ($account, $amount, $data, $scheduled, $scheduledFor) {
+        return Db::transaction(function () use ($account, $amount, $data, $scheduled, $scheduledFor, $warning) {
             try {
                 $withdraw = new AccountWithdraw();
                 $withdraw->id = Uuid::uuid4()->toString();
@@ -152,7 +154,14 @@ class AccountWithdrawService
                     $this->processImmediateWithdraw($account, $withdraw, $amount);
                 }
 
-                return $this->formatWithdrawResponse($withdraw);
+                $response = $this->formatWithdrawResponse($withdraw);
+
+                // Injeta aviso se houver
+                if ($warning) {
+                    $response['warning'] = $warning;
+                }
+
+                return $response;
 
             } catch (\Exception $e) {
                 $errorCode = ErrorMapper::DATABASE_ERROR;
@@ -265,6 +274,34 @@ class AccountWithdrawService
                 ['amount' => $amount],
                 ErrorMapper::getHttpStatusCode($errorCode)
             );
+        }
+    }
+
+    // Valida saldo considerando saques agendados
+    private function validateScheduledBalance(Account $account, float $newAmount): ?array
+    {
+        // Soma todos os saques agendados pendentes dessa conta
+        $alreadyScheduled = AccountWithdraw::query()
+            ->where('account_id', $account->id)
+            ->where('scheduled', true)
+            ->where('done', false)
+            ->where('error', false)
+            ->sum('amount');
+
+        $availableBalance = $account->balance - $alreadyScheduled;
+
+        if ($newAmount > $availableBalance) {
+            $warningCode = ErrorMapper::POSSIBLE_INSUFFICIENT_BALANCE;
+            return [
+                'code' => $warningCode,
+                'message' => ErrorMapper::getDefaultMessage($warningCode),
+                'details' => [
+                    'current_balance' => (float) $account->balance,
+                    'already_scheduled' => (float) $alreadyScheduled,
+                    'requested_amount' => (float) $newAmount,
+                    'available_after_scheduled' => (float) $availableBalance
+                ]
+            ];
         }
     }
 
