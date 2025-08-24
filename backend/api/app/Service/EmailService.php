@@ -94,7 +94,7 @@ class EmailService
                     </div>
                     
                     <div class="footer">
-                        <p><small>Digital Wallet &copy; 2024 - Este é um email automático</small></p>
+                        <p><small>Digital Wallet &copy; 2025 - Este é um email automático</small></p>
                     </div>
                 </div>
             </body>
