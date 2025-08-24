@@ -358,8 +358,26 @@ class AccountWithdrawService
         $account->balance -= $amount;
         $account->save();
 
-        // TODO: Envia email assíncrono
-        
+        // Envia email
+        try {
+            $emailService = ApplicationContext::getContainer()->get(EmailService::class);
+            $emailService->sendWithdrawalEmail(
+                $withdraw->pixDetails->key,
+                $withdraw->amount,
+                $withdraw->pixDetails->key,
+                $withdraw->pixDetails->type,
+                date('d/m/Y H:i')
+            );
+        } catch (\Throwable $e) {
+            $errorCode = ErrorMapper::EMAIL_SEND_FAILED;
+            throw new BusinessException(
+                $errorCode,
+                ErrorMapper::getDefaultMessage($errorCode),
+                ['error' => $e->getMessage()],
+                ErrorMapper::getHttpStatusCode($errorCode)
+            );
+        }
+
         // Marca como processado
         $withdraw->done = true;
         $withdraw->updated_at = Carbon::now();
@@ -394,7 +412,7 @@ class AccountWithdrawService
                     $withdraw->amount,
                     $withdraw->pixDetails->key,
                     $withdraw->pixDetails->type,
-                    $account->updated_at->toDateString()
+                    date('d/m/Y H:i')
                 );
             } catch (\Throwable $e) {
                 $logger = ApplicationContext::getContainer()->get(LoggerInterface::class);
