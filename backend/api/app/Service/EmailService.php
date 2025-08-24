@@ -6,7 +6,9 @@ namespace App\Service;
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception as PHPMailerException;
-use Hyperf\Utils\Env;
+use function Hyperf\Support\env;
+use App\Constants\ErrorMapper;
+use App\Exception\Handler\BusinessException;
 
 class EmailService
 {
@@ -17,14 +19,14 @@ class EmailService
         try {
             // Configurações de conexão
             $mail->isSMTP();
-            $mail->Host = getenv('MAIL_HOST') ?: 'localhost';
-            $mail->Port = getenv('MAIL_PORT') ?: 1025;
+            $mail->Host = env('MAIL_HOST', 'localhost');
+            $mail->Port = env('MAIL_PORT', 1025);
             $mail->SMTPAuth = false;
             $mail->SMTPSecure = false;
             $mail->SMTPAutoTLS = false;
 
             // Remetente
-            $mail->setFrom(getenv('MAIL_FROM_ADDRESS') ?: 'no-reply@digitalwallet.com', 'Digital Wallet');
+            $mail->setFrom(env('MAIL_FROM_ADDRESS', 'no-reply@digitalwallet.com'), env('MAIL_FROM_NAME', 'Digital Wallet'));
             $mail->addAddress($to);
 
             // Conteúdo do email
@@ -37,9 +39,15 @@ class EmailService
 
             // Envia o email
             $mail->send();
-            
-        } catch (PHPMailerException $e) {
-            throw new \RuntimeException("Erro ao enviar email para Mailhog: " . $e->getMessage());
+        
+        } catch (\Exception $e) {
+            $errorCode = ErrorMapper::EMAIL_SENDING_FAILED;
+            throw new BusinessException(
+                $errorCode,
+                ErrorMapper::getDefaultMessage($errorCode),
+                ['original_message' => $e->getMessage()],
+                ErrorMapper::getHttpStatusCode($errorCode)
+            );
         }
     }
 
