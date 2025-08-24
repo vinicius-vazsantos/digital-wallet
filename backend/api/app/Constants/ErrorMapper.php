@@ -24,6 +24,7 @@ class ErrorMapper
     public const DATABASE_ERROR = 'DATABASE_ERROR';
     public const TRANSACTION_ERROR = 'TRANSACTION_ERROR';
     public const NO_FIELDS_TO_UPDATE = 'NO_FIELDS_TO_UPDATE';
+    public const EMAIL_SEND_FAILED = 'EMAIL_SEND_FAILED';
 
     /**
      * Mapeamento de códigos de erro para códigos HTTP
@@ -53,6 +54,7 @@ class ErrorMapper
         self::INTERNAL_ERROR => 500,
         self::DATABASE_ERROR => 500,
         self::TRANSACTION_ERROR => 500,
+        self::EMAIL_SEND_FAILED => 500,
     ];
 
     /**
@@ -76,6 +78,7 @@ class ErrorMapper
         self::DATABASE_ERROR => 'Erro de banco de dados',
         self::TRANSACTION_ERROR => 'Erro na transação',
         self::NO_FIELDS_TO_UPDATE => 'Nenhum campo válido foi fornecido para atualização',
+        self::EMAIL_SEND_FAILED => 'Falha ao enviar e-mail',
     ];
 
     /**
