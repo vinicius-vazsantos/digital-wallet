@@ -20,7 +20,7 @@ class AccountWithdrawService
     // Lista de métodos de saques suportados e suas regras
     private const WITHDRAW_METHODS = [
         'PIX' => [
-            'required_fields' => ['pix.type', 'pix.key'],
+            'required_fields' => ['amount', 'pix.type', 'pix.key'],
             'valid_types' => ['email'], // TODO: 'cpf_cnpj', 'phone', 'random_key'
             'validator' => 'validatePixType'
         ],
