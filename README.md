@@ -3,7 +3,6 @@
 **Descrição:**
 Plataforma de conta digital que permite saques PIX rápidos e seguros, com gestão de saldo, notificações e tecnologia PHP Hyperf, MySQL e Docker.
 
-
 ## Regras de Negócio
 
 - [x] A operação do saque deve ser registrada no banco de dados, usando as tabelas **account_withdraw** e **account_withdraw_pix**.  
@@ -32,14 +31,26 @@ docker compose up -d --build
 
 ---
 
+## URLs de Acesso aos Serviços
+
+| Serviço        | URL de Acesso                        | Descrição                        |
+|----------------|-------------------------------------|----------------------------------|
+| Swagger (API)  | http://localhost:9500/swagger/index.html | Documentação interativa da API   |
+| MailHog (Web)  | http://localhost:8030               | Visualização de e-mails enviados |
+| MailHog (SMTP) | localhost:1030                      | Porta SMTP para envio de e-mails |
+
+---
+
 ## Configuração do ambiente de desenvolvimento Hyperf com PHP 8.3 e Swoole
 
 ### Requisitos
 
 * Ubuntu 22.04 ou similar
 * PHP 8.3
+* Hyperf e Swoole 
 * Composer
 * Git
+* Mailhog
 * Extensões básicas de desenvolvimento (`build-essential`, `autoconf`, `pkg-config`)
 
 ---
@@ -93,3 +104,61 @@ curl -sS https://getcomposer.org/installer | php
 sudo mv composer.phar /usr/local/bin/composer
 sudo chmod +x /usr/local/bin/composer
 ```
+
+## Passo 6: Instalar e rodar o MailHog (SMTP fake para desenvolvimento)
+
+O MailHog é uma ferramenta para capturar e visualizar e-mails enviados pela aplicação em ambiente local.
+
+### Instalar MailHog
+
+```bash
+# Baixe o binário do MailHog
+wget --no-check-certificate https://github.com/mailhog/MailHog/releases/download/v1.0.1/MailHog_linux_amd64
+
+# Renomeie e mova para um diretório do PATH
+mv MailHog_linux_amd64 mailhog
+chmod +x mailhog
+sudo mv mailhog /usr/local/bin/
+
+# Rodar mailhog
+mialhog
+```
+
+## Configuração do projeto 
+## Instalar dependências do projeto
+
+```bash
+cd ~/bank-manager/backend/api/
+composer install
+```
+
+---
+
+## Gerar documentação Swagger/OpenAPI
+
+1. Instalar Swagger PHP (caso não esteja instalado):
+
+```bash
+composer require zircote/swagger-php
+```
+
+2. Gerar ou atualizar a documentação Swagger:
+
+```bash
+./vendor/bin/openapi app -o public/swagger/swagger.json
+```
+
+> * `app` é a pasta onde estão suas controllers/annotations do Hyperf.
+> * `public/swagger/swagger.json` contém o JSON gerado e os arquivos estáticos para o Swagger UI.
+
+---
+
+## Rodar Hyperf em modo desenvolvimento
+
+```bash
+php bin/hyperf.php start
+```
+
+> Servidor Hyperf disponível na porta **9501**.
+> Configurações de desenvolvimento: logs detalhados, hot reload e permissões amplas de debug.
+
