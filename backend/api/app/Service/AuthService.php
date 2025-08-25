@@ -43,10 +43,16 @@ class AuthService
             'email' => $email,
         ]);
 
+        // Pega o tempo de expiração e calcula datas
+        $expiresIn = (int) env('JWT_EXPIRE', 3600); 
+        $createdAt = date('Y-m-d H:i:s');
+        $expiresAt = date('Y-m-d H:i:s', time() + $expiresIn);
+
         return [
             'access_token' => $token,
             'token_type' => 'Bearer',
-            'expires_in' => (int) env('JWT_EXPIRE', 3600) // 3600s = 1hr
+            'created_at' => $createdAt,
+            'expires_at' => $expiresAt
         ];
     }
 
