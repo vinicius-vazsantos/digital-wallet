@@ -20,7 +20,7 @@ class AccountService
         }
 
         if ($createdAt) {
-            $query->scopeWithCreatedAt($createdAt);
+            $query->withCreatedAt($createdAt);
         }
 
         if ($includeDeleted) {
