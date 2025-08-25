@@ -33,7 +33,8 @@ use Psr\Http\Message\ResponseInterface as Response;
  *     @OA\Property(property="data", type="object",
  *         @OA\Property(property="access_token", type="string", example="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."),
  *         @OA\Property(property="token_type", type="string", example="Bearer"),
- *         @OA\Property(property="expires_in", type="integer", example=3600)
+ *         @OA\Property(property="created_at", type="string", format="date-time", example="2025-08-24T16:30:00Z"),
+ *         @OA\Property(property="expires_at", type="string", format="date-time", example="2025-08-24T17:30:00Z")
  *     ),
  *     @OA\Property(property="message", type="string", example="Login realizado com sucesso")
  * )
