@@ -303,6 +303,8 @@ class AccountWithdrawService
                 ]
             ];
         }
+
+        return null;
     }
 
     // Valida agendamento
