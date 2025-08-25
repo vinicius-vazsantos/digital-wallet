@@ -955,9 +955,15 @@
                                 "type": "string",
                                 "example": "Bearer"
                             },
-                            "expires_in": {
-                                "type": "integer",
-                                "example": 3600
+                            "created_at": {
+                                "type": "string",
+                                "format": "date-time",
+                                "example": "2025-08-24T16:30:00Z"
+                            },
+                            "expires_at": {
+                                "type": "string",
+                                "format": "date-time",
+                                "example": "2025-08-24T17:30:00Z"
                             }
                         },
                         "type": "object"
