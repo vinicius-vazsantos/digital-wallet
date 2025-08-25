@@ -60,6 +60,23 @@ services:
     networks:
       - wallet
 
+  k6:
+    image: loadimpact/k6:latest
+    container_name: k6_tests
+    working_dir: /tests
+    volumes:
+      - ./backend/k6:/tests
+    depends_on:
+      - backend
+    networks:
+      - wallet
+    environment:
+      - STRESS_VUS=5
+      - STRESS_ITERATIONS=10
+      - STRESS_DURATION=1m
+    entrypoint: ["k6"]
+    command: ["run", "errorResponse.js"]
+
 volumes:
   db_data:
 
