@@ -41,6 +41,22 @@ docker compose up -d --build
 
 ---
 
+## Testes de carga e validadores com K6
+
+Para executar os testes automatizados de verificação de erros com o K6, utilize o comando abaixo:
+
+```bash
+docker compose run --rm k6 run --vus 1 --iterations 1 errorResponse.js
+```
+
+E para teste de stress, utilize:
+
+```bash
+docker compose run --rm k6 run --vus 50 --duration 5m stressWithdraws.js
+```
+
+---
+
 ## Configuração do ambiente de desenvolvimento Hyperf com PHP 8.3 e Swoole
 
 ### Requisitos
