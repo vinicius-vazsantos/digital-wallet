@@ -109,9 +109,17 @@ class AccountWithdrawService
         // Valida dados obrigatórios
         $this->validateRequiredFields($data);
         
-        $account = ApplicationContext::getContainer()
-            ->get(AccountService::class)
-            ->getAccount($data['account_id']);
+        // Busca a conta com lock para concorrência
+        $account = Account::lockForUpdate()->find($data['account_id']);
+        if (!$account) {
+            $errorCode = ErrorMapper::ACCOUNT_NOT_FOUND;
+            throw new BusinessException(
+                $errorCode,
+                ErrorMapper::getDefaultMessage($errorCode),
+                ['field' => 'accountId'],
+                ErrorMapper::getHttpStatusCode($errorCode)
+            );
+        }
 
         $amount = (float)$data['amount'];
         $this->validateAmount($amount);
@@ -384,24 +392,34 @@ class AccountWithdrawService
     // Processa saque imediato
     private function processImmediateWithdraw(Account $account, AccountWithdraw $withdraw, float $amount): void
     {
+        // Busca a conta novamente com lock para garantir concorrência
+        $lockedAccount = Account::lockForUpdate()->find($account->id);
+        if (!$lockedAccount) {
+            $errorCode = ErrorMapper::ACCOUNT_NOT_FOUND;
+            throw new BusinessException(
+                $errorCode,
+                ErrorMapper::getDefaultMessage($errorCode),
+                ['field' => 'accountId'],
+                ErrorMapper::getHttpStatusCode($errorCode)
+            );
+        }
         // Verifica saldo novamente (double-check)
-        if ($account->balance < $amount) {
+        if ($lockedAccount->balance < $amount) {
             $errorCode = ErrorMapper::INSUFFICIENT_BALANCE;
             throw new BusinessException(
                 $errorCode,
                 ErrorMapper::getDefaultMessage($errorCode),
                 [
-                    'current_balance' => $account->balance,
+                    'current_balance' => $lockedAccount->balance,
                     'requested_amount' => $amount,
-                    'deficit' => $amount - $account->balance
+                    'deficit' => $amount - $lockedAccount->balance
                 ],
                 ErrorMapper::getHttpStatusCode($errorCode)
             );
         }
-
         // Deduz saldo
-        $account->balance -= $amount;
-        $account->save();
+        $lockedAccount->balance -= $amount;
+        $lockedAccount->save();
 
         // Envia email
         try {
