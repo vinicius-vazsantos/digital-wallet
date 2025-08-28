@@ -264,8 +264,6 @@ class AccountWithdrawController
                 ->json([
                     'data' => [],
                     'message' => $message,
-                    'original_message' => $e->getMessage(),
-                    'trace' => $e->getTraceAsString()
                 ]);
         }
     }
