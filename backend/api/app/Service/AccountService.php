@@ -41,7 +41,7 @@ class AccountService
     // Buscar conta por UUID
     public function getAccount(string $accountId): ?Account
     {
-        $account = Account::find($accountId);
+        $account = Account::lockForUpdate()->find($accountId);
         
         if (!$account) {
             $errorCode = ErrorMapper::ACCOUNT_NOT_FOUND;
@@ -82,8 +82,8 @@ class AccountService
     // Atualiza conta por UUID
     public function updateAccount(string $accountId, array $data): Account
     {
-        $account = Account::find($accountId);
-        
+        $account = Account::lockForUpdate()->find($accountId);
+
         if (!$account) {
             $errorCode = ErrorMapper::ACCOUNT_NOT_FOUND;
             throw new BusinessException(
@@ -126,8 +126,8 @@ class AccountService
     // Deleta conta
     public function deleteAccount(string $accountId): Account
     {
-        $account = Account::find($accountId);
-        
+        $account = Account::lockForUpdate()->find($accountId);
+
         if (!$account) {
             $errorCode = ErrorMapper::ACCOUNT_NOT_FOUND;
             throw new BusinessException(

@@ -433,7 +433,7 @@ class AccountWithdrawService
     public function processScheduledWithdraw(AccountWithdraw $withdraw)
     {
         return Db::transaction(function () use ($withdraw) {
-            $account = Account::find($withdraw->account_id);
+            $account = Account::lockForUpdate()->find($withdraw->account_id);
             
             if (!$account) {
                 $withdraw->markAsFailed(ErrorMapper::getDefaultMessage(ErrorMapper::ACCOUNT_NOT_FOUND));
@@ -444,10 +444,6 @@ class AccountWithdrawService
                 $withdraw->markAsFailed(ErrorMapper::getDefaultMessage(ErrorMapper::INSUFFICIENT_BALANCE));
                 return;
             }
-
-            // Deduz saldo
-            $account->balance -= $withdraw->amount;
-            $account->save();
 
             // Envia email
             try {
@@ -463,6 +459,10 @@ class AccountWithdrawService
                 $logger = ApplicationContext::getContainer()->get(LoggerInterface::class);
                 $logger->error("Erro ao enviar email para saque {$withdraw->id}: " . $e->getMessage());
             }
+
+            // Deduz saldo
+            $account->balance -= $withdraw->amount;
+            $account->save();
             
             // Marca como processado
             $withdraw->markAsProcessed();
